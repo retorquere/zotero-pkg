@@ -5,7 +5,7 @@
   "description": "Build debian packages for Zotero",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "FORCE_COLOR=3 node index.js",
     "test": "dprint fmt *.js"
   },
   "author": "Emiliano Heyns",
