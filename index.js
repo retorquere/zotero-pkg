@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 
 import yaml from 'js-yaml' // Still requires: npm install js-yaml
-import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { download, run, Zotero } from './staging.js'
+import { download, shell, run, Zotero } from './staging.js'
 
 async function getHash(filename, algo) {
   const content = await fs.readFile(filename)
@@ -25,7 +24,7 @@ function banner(s, c = '*') {
 
 function humanReadable(size) {
   const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB']
-  while (size >= 1024 && unitIndex < units.length - 1) {
+  while (size >= 1024 && units[1]) {
     size /= 1024
     units.shift()
   }
@@ -65,7 +64,7 @@ async function main() {
       }
       else {
         const url = `https://zotero.retorque.re/file/apt-package-archive/${encodeURIComponent(deb.name)}`
-        const success = await download(url, deb.path)
+        const success = download(url, deb.path)
         if (success) {
           banner(`${prefix}: fetched ${deb.name} from repo`)
           continue
@@ -121,10 +120,10 @@ async function main() {
     }
 
     // Use shell for the pipe-heavy apt commands
-    run('sh', ['-c', "apt-ftparchive packages . | awk 'BEGIN{ok=1} { if ($0 ~ /^E: /) { ok = 0 }; print } END{exit !ok}' > Packages"])
+    shell("apt-ftparchive packages . | awk 'BEGIN{ok=1} { if ($0 ~ /^E: /) { ok = 0 }; print } END{exit !ok}' > Packages")
     run('rm', ['-rf', 'by-hash'])
     run('bzip2', ['-kf', 'Packages'])
-    run('sh', ['-c', 'apt-ftparchive -o APT::FTPArchive::AlwaysStat=true -o APT::FTPArchive::Release::Codename=./ -o APT::FTPArchive::Release::Acquire-By-Hash=yes release . > Release'])
+    shell('apt-ftparchive -o APT::FTPArchive::AlwaysStat=true -o APT::FTPArchive::Release::Codename=./ -o APT::FTPArchive::Release::Acquire-By-Hash=yes release . > Release')
 
     run('gpg', ['--yes', '-abs', '--local-user', maintainer.gpgkey, '-o', 'Release.gpg', '--digest-algo', 'sha256', 'Release'])
     run('gpg', ['--yes', '-abs', '--local-user', maintainer.gpgkey, '--clearsign', '-o', 'InRelease', '--digest-algo', 'sha256', 'Release'])

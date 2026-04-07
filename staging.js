@@ -1,27 +1,52 @@
 import ini from 'ini'
 import yaml from 'js-yaml'
-import { spawnSync } from 'node:child_process'
+import { execFileSync, execSync } from 'node:child_process'
 import { createWriteStream, existsSync, readFileSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import semver from 'semver'
 
-export function run(cmd, args = []) {
-  console.log(`${cmd} ${args.join(' ')}`.trim())
+export function run(cmd, args=[], redir='') {
+  console.log(`$ ${cmd} ${args.join(' ')}`.trim())
+  try {
+    const output = execFileSync(cmd, args, { encoding: 'utf-8' })
+    console.log('  ran')
+    if (redir) fs.writeFileSync(redir, output)
+    return output
+  }
+  catch (err) {
+    console.error(cmd, args, 'failed:', err.message)
+    console.error(err.stderr);
+    process.exit(1)
+  }
+}
 
-  const result = spawnSync(cmd, args, { stdio: 'inherit', shell: true })
-  if (result.status !== 0) process.exit(1)
+export function shell(cmd) {
+  console.log(`$ ${cmd}`)
+  try {
+    return execSync(cmd, { encoding: 'utf-8' })
+    console.log('  ran')
+  }
+  catch (err) {
+    console.log('  failed')
+    console.error(err.message);
+    console.error(err.stderr);
+    process.exit(1)
+  }
 }
 
 export function download(url, filename) {
-  const args = ['-sLf', '-o', filename, url]
-  console.log(`curl ${args.join(' ')}`)
+  console.log('downloading', url, '=>', filename)
+  try {
+    execFileSync('curl', ['-sLf', '-o', filename, url])
+  }
+  catch (err) {
+    console.log(' : failed')
+    return ''
+  }
 
-  spawnSync('curl', args, { shell: true })
-
-  const exists = existsSync(filename)
-  console.log(exists ? ' : succeeded' : ' : failed')
+  console.log(existsSync(filename) ? ' : succeeded' : ' : failed')
   return filename
 }
 
@@ -79,8 +104,6 @@ export class Zotero {
 
     const versions = await response.json()
     const patch = v => v.replace(/^(\d+\.\d+)(?![.\d])/, '$1.0')
-    console.log(versions)
-    console.log(versions.map(v => patch(v.version)))
     this.versions = versions.map(v => v.version).sort((a, b) => semver.compare(patch(a), patch(b), { loose: true }))
 
     if (this.legacy) {
@@ -152,7 +175,7 @@ export class Zotero {
     const klass = (this.beta || this.legacy) ? `--class ${this.config.package}` : ''
     entry.Exec = `/usr/lib/${this.config.package}/${this.bin} ${klass} --url %u`.replace(/\s+/g, ' ')
 
-    Enrty.name = this.name
+    entry.name = this.name
     if (this.beta) entry.Name += ' Beta'
     if (this.legacy) entry.Name += ' (Legacy)'
 
