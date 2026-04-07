@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import ini from 'ini'
 import yaml from 'js-yaml'
 import { execFileSync, execSync } from 'node:child_process'
@@ -7,46 +8,73 @@ import os from 'node:os'
 import path from 'node:path'
 import semver from 'semver'
 
-export function run(cmd, args=[], redir='') {
-  console.log(`$ ${cmd} ${args.join(' ')}`.trim())
+class Status {
+  constructor(msg) {
+    this.msg = msg
+    const yellow = chalk.bgBlack.hex('#FFFF00')
+    process.stdout.write(yellow(msg))
+  }
+
+  fail() {
+    process.stdout.write('\r\x1b[K' + chalk.bgBlack.red(this.msg) + '\n')
+  }
+
+  done() {
+    process.stdout.write('\r\x1b[K' + chalk.bgBlack.green(this.msg) + '\n')
+  }
+
+  dump(err) {
+    console.log(chalk.bgBlack.white(err.message))
+    console.log(chalk.bgBlack.white(err.stderr))
+  }
+}
+
+export function run(cmd, args = [], redir = '') {
+  const status = new Status(`$ ${cmd} ${args.join(' ')}`.trim())
   try {
     const output = execFileSync(cmd, args, { encoding: 'utf-8' })
-    console.log('  ran')
     if (redir) fs.writeFileSync(redir, output)
+    status.done()
     return output
   }
   catch (err) {
-    console.error(cmd, args, 'failed:', err.message)
-    console.error(err.stderr);
+    status.fail()
+    status.dump(err)
     process.exit(1)
   }
 }
 
 export function shell(cmd) {
-  console.log(`$ ${cmd}`)
+  const status = new Status(`$ ${cmd}`)
   try {
-    return execSync(cmd, { encoding: 'utf-8' })
-    console.log('  ran')
+    const output = execSync(cmd, { encoding: 'utf-8' })
+    status.done()
+    return output
   }
   catch (err) {
-    console.log('  failed')
-    console.error(err.message);
-    console.error(err.stderr);
+    status.fail()
+    status.dump(err)
     process.exit(1)
   }
 }
 
 export function download(url, filename) {
-  console.log('downloading', url, '=>', filename)
+  const status = new Status(`$ curl -sLf -o ${filename} ${url}`)
   try {
     execFileSync('curl', ['-sLf', '-o', filename, url])
+    status.done()
   }
   catch (err) {
-    console.log(' : failed')
+    status.fail()
     return ''
   }
 
-  console.log(existsSync(filename) ? ' : succeeded' : ' : failed')
+  if (existsSync(filename)) {
+    status.done()
+  }
+  else {
+    status.fail()
+  }
   return filename
 }
 

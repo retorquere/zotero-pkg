@@ -11,6 +11,7 @@
   "author": "Emiliano Heyns",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^5.6.2",
     "dprint": "^0.53.2",
     "ini": "^6.0.0",
     "js-yaml": "^4.1.1",

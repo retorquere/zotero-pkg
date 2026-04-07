@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 
+import chalk from 'chalk'
 import yaml from 'js-yaml' // Still requires: npm install js-yaml
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { download, shell, run, Zotero } from './staging.js'
+const amber = chalk.hex('#FFB000')
+
+import { download, run, shell, Zotero } from './staging.js'
 
 async function getHash(filename, algo) {
   const content = await fs.readFile(filename)
@@ -17,9 +20,9 @@ async function getHash(filename, algo) {
 function banner(s, c = '*') {
   console.log('\n\n')
   const msg = `${c.repeat(3)} ${s} ${c.repeat(3)}`
-  console.log(c.repeat(msg.length))
-  console.log(msg)
-  console.log(c.repeat(msg.length))
+  console.log(chalk.bgBlack(amber(c.repeat(msg.length))))
+  console.log(chalk.bgBlack(amber(msg)))
+  console.log(chalk.bgBlack(amber(c.repeat(msg.length))))
 }
 
 function humanReadable(size) {
