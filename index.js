@@ -84,6 +84,8 @@ async function main() {
           arch,
           platform: 'linux',
           version: zotero.version,
+          ...(zotero.release ? { release: zotero.release } : {}),
+          depends: zotero.config.client.dependencies,
           maintainer: `${zotero.config.maintainer.name} <${zotero.config.maintainer.email}>`,
           description: zotero.config.client.description,
           homepage: zotero.homepage,
