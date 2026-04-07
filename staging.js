@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import ini from 'ini'
+import * as ini from 'js-ini'
 import yaml from 'js-yaml'
 import { execFileSync, execSync } from 'node:child_process'
 import { createWriteStream, existsSync, readFileSync } from 'node:fs'
@@ -229,7 +229,11 @@ export class Zotero {
       'application/vnd.citationstyles.style+xml',
     ].join(';')
 
-    await fs.writeFile(desktopPath, ini.stringify(desktop))
+    await fs.writeFile(desktopPath, ini.stringify(desktop, {
+      blankLine: false,
+      spaceBefore: false,
+      spaceAfter: false
+    }))
 
     return this.config.staging
   }
