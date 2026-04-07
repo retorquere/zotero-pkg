@@ -1,4 +1,7 @@
 repo:
+	npm start
+
+crepo:
 	crystal rebuild-apt.cr
 
 zotero-archive-keyring.asc:

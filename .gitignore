@@ -5,3 +5,5 @@ rebuild-apt
 staged
 gpg
 nfpm.yaml
+node_modules
+package-lock.json

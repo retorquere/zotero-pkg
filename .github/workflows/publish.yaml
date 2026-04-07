@@ -64,6 +64,13 @@ jobs:
         download_url = https://zotero.retorque.re
         EOF
 
+    - name: install node
+      uses: actions/setup-node@v6
+      with:
+        node-version: 24.x
+    - name: install node packages
+      run: npm install --no-package-lock && npm ls
+
     - name: cache repo
       uses: actions/cache@v4
       env:
