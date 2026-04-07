@@ -35,6 +35,7 @@ export function run(cmd, args = [], redir = '') {
     const output = execFileSync(cmd, args, { encoding: 'utf-8' })
     if (redir) fs.writeFileSync(redir, output)
     status.done()
+    if (output) console.log(chalk.bgBlack.white(output))
     return output
   }
   catch (err) {
@@ -49,6 +50,7 @@ export function shell(cmd) {
   try {
     const output = execSync(cmd, { encoding: 'utf-8' })
     status.done()
+    if (output) console.log(chalk.bgBlack.white(output))
     return output
   }
   catch (err) {
@@ -60,9 +62,9 @@ export function shell(cmd) {
 
 export function download(url, filename) {
   const status = new Status(`$ curl -sLf -o ${filename} ${url}`)
+  let output = ''
   try {
-    execFileSync('curl', ['-sLf', '-o', filename, url])
-    status.done()
+    output = execFileSync('curl', ['-sLf', '-o', filename, url])
   }
   catch (err) {
     status.fail()
@@ -75,6 +77,7 @@ export function download(url, filename) {
   else {
     status.fail()
   }
+  if (output) console.log(chalk.bgBlack.white(output))
   return filename
 }
 
@@ -158,8 +161,8 @@ export class Zotero {
     this.url = `https://download.zotero.org/client/${channel}/${urlv}/Zotero-${urlv}_linux-${this.targetArch}.tar.${this.ext}`
 
     // Clean version string
-    this.versionClean = this.version.replace(/-beta/, '').replace(/^(\d+\.\d+)$/, '$1.0')
-    this.release = this.config.client.release?.[this.versionClean] || 0
+    this.version = this.version.replace(/-beta/, '').replace(/^(\d+\.\d+)$/, '$1.0')
+    this.release = this.config.client.release?.[this.version] || 0
 
     return this
   }

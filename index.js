@@ -112,6 +112,7 @@ async function main() {
     process.chdir(repo)
 
     banner('Rebuilding repo index', '=')
+    console.log(keep)
 
     const assets = await fs.readdir('.')
     for (const asset of assets) {
