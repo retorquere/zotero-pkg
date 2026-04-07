@@ -61,7 +61,7 @@ zotero-beta:
     7.0.12.1+31bbf2acf: 1
     9.0.15+81591eb89: 2
     9.0.16+6140088b0: 1
-    9.0.19+4398a2bce: 2
+    9.0.19+4398a2bce: 3
 jurism:
   description: Juris-M is a free, easy-to-use tool to help you collect, organize, cite, and share research
   dependencies:

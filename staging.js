@@ -206,7 +206,7 @@ export class Zotero {
     const klass = (this.beta || this.legacy) ? `--class ${this.config.package}` : ''
     entry.Exec = `/usr/lib/${this.config.package}/${this.bin} ${klass} --url %u`.replace(/\s+/g, ' ')
 
-    entry.name = this.name
+    entry.Name = this.name
     if (this.beta) entry.Name += ' Beta'
     if (this.legacy) entry.Name += ' (Legacy)'
 
