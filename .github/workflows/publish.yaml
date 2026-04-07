@@ -33,7 +33,7 @@ jobs:
         echo "deb https://packagecloud.io/84codes/crystal/$ID $VERSION_CODENAME main" | sudo tee /etc/apt/sources.list.d/84codes_crystal.list
 
     - name: import GPG key
-      uses: retorquere/ghaction-import-gpg@master
+      uses: retorquere/ghaction-import-gpg@rebase
       with:
         gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
 
@@ -70,16 +70,6 @@ jobs:
         node-version: 24.x
     - name: install node packages
       run: npm install --no-package-lock && npm ls
-
-    - name: cache repo
-      uses: actions/cache@v4
-      env:
-        cache-name: v6
-      with:
-        path: |
-          apt
-          rebuild-apt
-        key: repo-${{ env.cache-name }}-${{ hashFiles('rebuild-apt.cr', 'staging.cr') }}
 
     - name: rebuild
       id: rebuild
