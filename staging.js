@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import * as ini from 'js-ini'
 import yaml from 'js-yaml'
 import { execFileSync, execSync } from 'node:child_process'
-import { createWriteStream, existsSync, readFileSync } from 'node:fs'
+import { createWriteStream, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
@@ -33,7 +33,7 @@ export function run(cmd, args = [], redir = '') {
   const status = new Status(`$ ${cmd} ${args.join(' ')}`.trim())
   try {
     const output = execFileSync(cmd, args, { encoding: 'utf-8' })
-    if (redir) fs.writeFileSync(redir, output)
+    if (redir) writeFileSync(redir, output)
     status.done()
     if (output) console.log(chalk.bgBlack.white(output))
     return output
@@ -173,6 +173,17 @@ export class Zotero {
     return fullPath
   }
 
+  ini(inifile, mod) {
+    const data = ini.parse(readFileSync(inifile, 'utf-8'))
+    mod(data)
+    console.log('rewriting', inifile)
+    writeFileSync(inifile, ini.stringify(data, {
+      blankLine: false,
+      spaceBefore: false,
+      spaceAfter: false,
+    }))
+  }
+
   async stage() {
     await fs.rm(this.config.staging, { recursive: true, force: true })
     const staging = await this.mkdir(this.config.staging)
@@ -197,43 +208,53 @@ export class Zotero {
     cfgContent += `lockPref("app.update.enabled", false);\nlockPref("app.update.auto", false);\n`
     await fs.writeFile(mozCfg, cfgContent)
 
-    const desktopPath = path.join(staging, `${this.bin}.desktop`)
-    const desktop = ini.parse(await fs.readFile(desktopPath, 'utf-8'))
+    this.ini(path.join(staging, `${this.bin}.desktop`), desktop => {
+      const entry = desktop['Desktop Entry']
+      this.config.client.section = (entry.Categories || 'Science;Office;Education;Literature').trim().replace(/;$/, '')
 
-    const entry = desktop['Desktop Entry']
-    this.config.client.section = (entry.Categories || 'Science;Office;Education;Literature').trim().replace(/;$/, '')
+      const klass = (this.beta || this.legacy) ? `--class ${this.config.package}` : ''
+      entry.Exec = `/usr/lib/${this.config.package}/${this.bin} ${klass} --url %u`.replace(/\s+/g, ' ')
 
-    const klass = (this.beta || this.legacy) ? `--class ${this.config.package}` : ''
-    entry.Exec = `/usr/lib/${this.config.package}/${this.bin} ${klass} --url %u`.replace(/\s+/g, ' ')
+      entry.Name = this.name
+      if (this.beta) entry.Name += ' Beta'
+      if (this.legacy) entry.Name += ' (Legacy)'
 
-    entry.Name = this.name
-    if (this.beta) entry.Name += ' Beta'
-    if (this.legacy) entry.Name += ' (Legacy)'
+      entry.Comment = 'Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share research'
+      const iconPath = this.legacy ? 'chrome/icons/default/default256.png' : 'icons/icon128.png'
+      entry.Icon = `/usr/lib/${this.config.package}/${iconPath}`
 
-    entry.Comment = 'Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share research'
-    const iconPath = this.legacy ? 'chrome/icons/default/default256.png' : 'icons/icon128.png'
-    entry.Icon = `/usr/lib/${this.config.package}/${iconPath}`
+      entry.MimeType = [
+        'x-scheme-handler/zotero',
+        'application/x-endnote-refer',
+        'application/x-research-info-systems',
+        'text/ris',
+        'text/x-research-info-systems',
+        'application/x-inst-for-Scientific-info',
+        'application/mods+xml',
+        'application/rdf+xml',
+        'application/x-bibtex',
+        'text/x-bibtex',
+        'application/marc',
+        'application/vnd.citationstyles.style+xml',
+      ].join(';')
+    })
 
-    entry.MimeType = [
-      'x-scheme-handler/zotero',
-      'application/x-endnote-refer',
-      'application/x-research-info-systems',
-      'text/ris',
-      'text/x-research-info-systems',
-      'application/x-inst-for-Scientific-info',
-      'application/mods+xml',
-      'application/rdf+xml',
-      'application/x-bibtex',
-      'text/x-bibtex',
-      'application/marc',
-      'application/vnd.citationstyles.style+xml',
-    ].join(';')
+    if (this.beta) {
+      run('mogrify', [
+        '-font', 'DejaVu-Sans-Bold',
+        '-pointsize', '40',
+        '-gravity', 'NorthWest',
+        '-fill', 'red',
+        '-stroke', 'black',
+        '-strokewidth', '2',
+        '-annotate', '+10+6', 'β',
+        path.join(staging, 'icons/icon128.png'),
+      ])
 
-    await fs.writeFile(desktopPath, ini.stringify(desktop, {
-      blankLine: false,
-      spaceBefore: false,
-      spaceAfter: false
-    }))
+      this.ini(path.join(staging, 'app', 'application.ini'), app => {
+        app.App.Name = 'Zotero (beta)'
+      })
+    }
 
     return this.config.staging
   }
