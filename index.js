@@ -107,12 +107,23 @@ async function main() {
     }
   }
 
+  updated = updated || [
+    'InRelease',
+    'Packages',
+    'Packages.bz2',
+    'Release',
+    'Release.gpg',
+    'by-hash',
+    'index.css',
+    'index.html',
+    'zotero-archive-keyring.pgp',
+  ].find(asset => !existsSync(path.join(repo, asset)))
+
   if (updated || process.env.PUBLISH === 'true') {
     const maintainer = new Zotero('amd64', 'release').config.maintainer
     process.chdir(repo)
 
     banner('Rebuilding repo index', '=')
-    console.log(keep)
 
     const assets = await fs.readdir('.')
     for (const asset of assets) {
