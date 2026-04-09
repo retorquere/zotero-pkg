@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import chalk from 'chalk'
-import yaml from 'js-yaml' // Still requires: npm install js-yaml
+import yaml from 'js-yaml'
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import fs from 'node:fs/promises'
