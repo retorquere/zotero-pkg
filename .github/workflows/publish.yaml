@@ -67,7 +67,7 @@ jobs:
     - name: install node packages
       run: npm install --no-package-lock && npm ls
 
-    - name: Restore repo cache
+    - name: restore repo cache
       uses: actions/cache/restore@v5
       with:
         path: apt/
@@ -91,11 +91,11 @@ jobs:
         rclone sync apt b2-apt-package-archive:apt-package-archive -v
         rclone cleanup b2-apt-package-archive:apt-package-archive -v
 
-    - name: Generate cache content hash
+    - name: generate cache content hash
       id: hash
       run: |
         echo "new_hash=$(sha256sum apt/*.deb | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
-    - name: Save cache
+    - name: save cache
       continue-on-error: true
       if: steps.rebuild.outputs.updated == 'true'
       uses: actions/cache/save@v4
