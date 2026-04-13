@@ -9,7 +9,7 @@ import path from 'node:path'
 
 const amber = chalk.hex('#FFB000')
 
-import { download, run, shell, Zotero } from './staging.js'
+import { exists, download, run, shell, Zotero } from './staging.js'
 
 async function getHash(filename, algo) {
   const content = await fs.readFile(filename)
@@ -35,43 +35,61 @@ function humanReadable(size) {
 }
 
 async function main() {
+  let maintainer = ''
   const repo = path.resolve('apt')
   await fs.mkdir(repo, { recursive: true })
 
   const keep = new Set()
   let updated = false
 
-  for (const arch of ['arm64', 'amd64']) {
-    for (const mode of ['beta', 'release']) {
-      const zotero = await (new Zotero(arch, mode)).init()
+  for (const channel of ['release', 'beta']) {
+    const response = await fetch(`https://www.zotero.org/download/client/version?channel=${channel}`)
+    if (!response.ok) {
+      console.log('could not fetch versions for', channel)
+      process.exit(1)
+    }
+    const versions = await response.json()
+    for (let [arch, version] of Object.entries(versions)) {
+      if (!arch.startsWith('linux-')) continue
+      arch = arch.replace(/^linux-/, '')
+
+      const debarch = {
+        x86_64: 'amd64',
+        i686: 'i386',
+        arm64: 'arm64',
+      }[arch]
+
+      if (!arch) {
+        console.log('unexpected architecture', arch)
+        process.exit(1)
+      }
+
+      const zotero = new Zotero(arch, channel, version)
+      maintainer = zotero.config.maintainer
       if (!zotero.version) {
-        banner(`No versions found for ${arch} ${mode}`)
+        banner(`No versions found for ${arch} ${channel}`)
         continue
       }
 
       const deb = {
-        name: `${zotero.config.package}_${zotero.config.version(zotero.version)}_${arch}.deb`,
+        name: `${zotero.config.package}_${zotero.config.version(zotero.version)}_${debarch}.deb`,
       }
       deb.path = path.join(repo, deb.name)
-
       keep.add(deb.name)
 
-      const prefix = `${arch} ${mode} ${zotero.version}`
+      const url = `https://zotero.retorque.re/file/apt-package-archive/${encodeURIComponent(deb.name)}`
+
+      const prefix = `${debarch} ${channel} ${zotero.version}`
 
       if (process.env.BUILD === 'true') {
         banner(`${prefix}: rebuilding ${deb.name}`)
       }
-      else if (existsSync(deb.path)) {
+      else if (existsSync(deb.path) || await exists(url)) {
         banner(`${prefix}: retaining ${deb.name}`)
+        if (!existsSync(deb.path)) await download(url, deb.path)
         continue
       }
       else {
-        const url = `https://zotero.retorque.re/file/apt-package-archive/${encodeURIComponent(deb.name)}`
-        const success = download(url, deb.path)
-        if (success) {
-          banner(`${prefix}: fetched ${deb.name} from repo`)
-          continue
-        }
         banner(`${prefix}: building ${deb.name}`)
       }
 
@@ -81,7 +99,7 @@ async function main() {
         'nfpm.yaml',
         yaml.dump({
           name: zotero.config.package,
-          arch,
+          arch: debarch,
           platform: 'linux',
           version: zotero.version,
           ...(zotero.release ? { release: zotero.release } : {}),
@@ -122,7 +140,6 @@ async function main() {
   ].find(asset => !existsSync(path.join(repo, asset)))
 
   if (updated || process.env.PUBLISH === 'true') {
-    const maintainer = new Zotero('amd64', 'release').config.maintainer
     process.chdir(repo)
 
     banner('Rebuilding repo index', '=')

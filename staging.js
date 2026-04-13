@@ -8,6 +8,9 @@ import os from 'node:os'
 import path from 'node:path'
 import semver from 'semver'
 
+import { Readable } from 'node:stream'
+import { finished } from 'node:stream/promises'
+
 class Status {
   constructor(msg) {
     this.msg = msg
@@ -60,34 +63,49 @@ export function shell(cmd) {
   }
 }
 
-export function download(url, filename) {
-  const status = new Status(`$ curl -sLf -o ${filename} ${url}`)
-  let output = ''
+export async function exists(url) {
   try {
-    output = execFileSync('curl', ['-sLf', '-o', filename, url])
+    const response = await fetch(url, { method: 'HEAD' })
+    return response.ok
   }
-  catch (err) {
+  catch (error) {
+    return false
+  }
+}
+
+export async function download(url, filename) {
+  const status = new Status(`downloading ${url}`)
+
+  const response = await fetch(url)
+  if (!response.ok) {
     status.fail()
-    return ''
+    console.log('download of', url, 'failed')
+    process.exit(1)
   }
+
+  const target = createWriteStream(filename)
+  const body = Readable.fromWeb(response.body)
+  body.pipe(target)
+  await finished(target)
 
   if (existsSync(filename)) {
     status.done()
   }
   else {
     status.fail()
+    console.log('download of', url, 'failed')
+    process.exit(1)
   }
-  if (output) console.log(chalk.bgBlack.white(output))
-  return filename
 }
 
 export class Config {
-  constructor() {
+  constructor(beta) {
     Object.assign(this, yaml.load(readFileSync('config.yml', 'utf8')))
-    this.zotero_beta = this['zotero-beta']
+    this.package = beta ? 'zotero-beta' : 'zotero'
+    this.beta = this['zotero-beta']
     delete this['zotero-beta']
 
-    for (const client of [this.zotero, this.zotero7, this.zotero_beta]) {
+    for (const client of [this.zotero, this.beta]) {
       client.dependencies = [...(client.dependencies || []), ...this.common.dependencies]
     }
 
@@ -96,8 +114,7 @@ export class Config {
 
   get client() {
     if (this.package === 'zotero') return this.zotero
-    if (this.package === 'zotero-beta') return this.zotero_beta
-    if (this.package === 'zotero7') return this.zotero7
+    if (this.package === 'zotero-beta') return this.beta
     throw new Error(`Unknown package ${this.package}`)
   }
 
@@ -108,63 +125,24 @@ export class Config {
 }
 
 export class Zotero {
-  constructor(arch, mode) {
+  constructor(arch, channel, version) {
     this.arch = arch
-    this.mode = mode
-    this.beta = mode === 'beta'
-    this.legacy = mode === 'legacy'
+    this.version = version
+    this.beta = channel === 'beta'
 
-    this.targetArch = arch === 'amd64' ? 'x86_64' : arch === 'i386' ? 'i686' : 'arm64'
     this.bin = 'zotero'
     this.name = 'Zotero'
     this.vendor = 'Zotero'
     this.license = 'GNU Affero General Public License (version 3)'
     this.homepage = 'https://www.zotero.org/'
 
-    this.config = new Config()
-  }
+    this.config = new Config(this.beta)
+    this.ext = 'xz'
 
-  async init() {
-    const channel = this.beta ? 'beta' : 'release'
-    const updatesUrl = `https://www.zotero.org/download/client/manifests/${channel}/updates-linux-${this.targetArch}.json`
-
-    console.log(`Getting ${this.mode} ${this.arch} updates from ${updatesUrl}`)
-
-    const response = await fetch(updatesUrl)
-    if (!response.ok) throw new Error('Could not get Zotero version')
-
-    const versions = await response.json()
-    const patch = v => v.replace(/^(\d+\.\d+)(?![.\d])/, '$1.0')
-    this.versions = versions.map(v => v.version).sort((a, b) => semver.compare(patch(a), patch(b), { loose: true }))
-
-    if (this.legacy) {
-      this.versions = this.versions.filter(v => v.startsWith('7'))
-      this.config.package = 'zotero7'
-    }
-    else if (this.beta) {
-      this.config.package = 'zotero-beta'
-    }
-    else {
-      this.config.package = 'zotero'
-    }
-
-    console.log(`Available versions: ${this.versions}`)
-    if (this.versions.length === 0) {
-      this.version = ''
-      return
-    }
-
-    this.version = this.versions[this.versions.length - 1]
-    this.ext = this.version >= '8' ? 'xz' : 'bz2'
-
-    const urlv = encodeURIComponent(this.version)
-    this.url = `https://download.zotero.org/client/${channel}/${urlv}/Zotero-${urlv}_linux-${this.targetArch}.tar.${this.ext}`
-
-    // Clean version string
-    this.version = this.version.replace(/-beta/, '').replace(/^(\d+\.\d+)$/, '$1.0')
+    const urlv = encodeURIComponent(version)
+    this.url = `https://download.zotero.org/client/${channel}/${urlv}/Zotero-${urlv}_linux-${this.arch}.tar.${this.ext}`
+    this.version = version.replace(/-beta/, '').replace(/^(\d+\.\d+)$/, '$1.0')
     this.release = this.config.client.release?.[this.version] || 0
-
-    return this
   }
 
   async mkdir(d) {
@@ -177,11 +155,14 @@ export class Zotero {
     const data = ini.parse(readFileSync(inifile, 'utf-8'))
     mod(data)
     console.log('rewriting', inifile)
-    writeFileSync(inifile, ini.stringify(data, {
-      blankLine: false,
-      spaceBefore: false,
-      spaceAfter: false,
-    }))
+    writeFileSync(
+      inifile,
+      ini.stringify(data, {
+        blankLine: false,
+        spaceBefore: false,
+        spaceAfter: false,
+      }),
+    )
   }
 
   async stage() {
@@ -189,7 +170,7 @@ export class Zotero {
     const staging = await this.mkdir(this.config.staging)
 
     const tarball = path.join(os.tmpdir(), `${this.config.package}.tar.${this.ext}`)
-    download(this.url, tarball)
+    await download(this.url, tarball)
 
     run('tar', [this.ext === 'bz2' ? '-xjf' : '-xJf', tarball, '-C', staging, '--strip-components=1'])
 
