@@ -69,11 +69,11 @@ jobs:
 
     - name: Restore repo cache
       uses: actions/cache/restore@v5
-        with:
-          path: apt/
-          key: zotero-repo-last-known
-          restore-keys: |
-            zotero-repo-
+      with:
+        path: apt/
+        key: zotero-repo-last-known
+        restore-keys: |
+          zotero-repo-
 
     - name: rebuild
       id: rebuild
@@ -102,7 +102,6 @@ jobs:
       with:
         path: apt/
         key: zotero-repo-${{ steps.hash.outputs.hash }}
-
 
   install:
     needs: rebuild
