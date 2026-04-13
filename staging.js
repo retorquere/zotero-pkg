@@ -221,13 +221,21 @@ export class Zotero {
 
     if (this.beta) {
       run('mogrify', [
-        '-font', 'DejaVu-Sans-Bold',
-        '-pointsize', '40',
-        '-gravity', 'NorthWest',
-        '-fill', 'red',
-        '-stroke', 'black',
-        '-strokewidth', '2',
-        '-annotate', '+10+6', 'β',
+        '-font',
+        'DejaVu-Sans-Bold',
+        '-pointsize',
+        '40',
+        '-gravity',
+        'NorthWest',
+        '-fill',
+        'red',
+        '-stroke',
+        'black',
+        '-strokewidth',
+        '2',
+        '-annotate',
+        '+10+6',
+        'β',
         path.join(staging, 'icons/icon128.png'),
       ])
 

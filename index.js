@@ -9,7 +9,7 @@ import path from 'node:path'
 
 const amber = chalk.hex('#FFB000')
 
-import { exists, download, run, shell, Zotero } from './staging.js'
+import { download, exists, run, shell, Zotero } from './staging.js'
 
 async function getHash(filename, algo) {
   const content = await fs.readFile(filename)
@@ -193,7 +193,7 @@ async function main() {
   }
 
   if (process.env.GITHUB_ACTIONS === 'true') {
-    await fs.appendFile(process.env.GITHUB_OUTPUT, `updated=${updated}\n')
+    await fs.appendFile(process.env.GITHUB_OUTPUT, `updated=${updated}\n`)
   }
 }
 
