@@ -98,7 +98,7 @@ jobs:
     - name: save cache
       continue-on-error: true
       if: steps.rebuild.outputs.updated == 'true'
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: apt/
         key: zotero-repo-${{ steps.hash.outputs.hash }}
