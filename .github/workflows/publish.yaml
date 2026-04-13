@@ -28,12 +28,6 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
-    #- run: curl -fsSL https://crystal-lang.org/install.sh | sudo bash
-    - run: |
-        curl -fsSL https://packagecloud.io/84codes/crystal/gpgkey | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/84codes_crystal.gpg > /dev/null
-        . /etc/os-release
-        echo "deb https://packagecloud.io/84codes/crystal/$ID $VERSION_CODENAME main" | sudo tee /etc/apt/sources.list.d/84codes_crystal.list
-
     - name: import GPG key
       uses: retorquere/ghaction-import-gpg@rebase
       with:
@@ -42,7 +36,7 @@ jobs:
     - name: install build requirements
       run: |
         sudo apt-get -q update
-        sudo apt-get -qy install devscripts fakeroot moreutils pandoc crystal imagemagick
+        sudo apt-get -qy install devscripts fakeroot moreutils pandoc imagemagick
 
     - name: install nfpm
       run: |
