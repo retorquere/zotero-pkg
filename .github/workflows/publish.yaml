@@ -8,12 +8,14 @@ on:
     inputs:
       build:
         description: forced rebuild
+        type: boolean
         required: false
-        default: ''
+        default: false
       publish:
         description: forced publish
+        type: boolean
         required: false
-        default: ''
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
