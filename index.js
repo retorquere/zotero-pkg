@@ -40,7 +40,7 @@ async function main() {
   await fs.mkdir(repo, { recursive: true })
 
   const keep = new Set()
-  let updated = false
+  let updated = process.env.BUILD === 'true' || process.env.PUBLISH === 'true'
 
   for (const channel of ['release', 'beta']) {
     const response = await fetch(`https://www.zotero.org/download/client/version?channel=${channel}`)
@@ -139,7 +139,7 @@ async function main() {
     'zotero-archive-keyring.pgp',
   ].find(asset => !existsSync(path.join(repo, asset)))
 
-  if (updated || process.env.PUBLISH === 'true') {
+  if (updated) {
     process.chdir(repo)
 
     banner('Rebuilding repo index', '=')
