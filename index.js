@@ -193,7 +193,7 @@ async function main() {
   }
 
   if (process.env.GITHUB_ACTIONS === 'true') {
-    await fs.appendFile(process.env.GITHUB_OUTPUT, 'update=true\n')
+    await fs.appendFile(process.env.GITHUB_OUTPUT, `updated=${updated}\n')
   }
 }
 

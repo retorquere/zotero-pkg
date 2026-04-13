@@ -67,6 +67,14 @@ jobs:
     - name: install node packages
       run: npm install --no-package-lock && npm ls
 
+    - name: Restore repo cache
+      uses: actions/cache/restore@v5
+        with:
+          path: apt/
+          key: zotero-repo-last-known
+          restore-keys: |
+            zotero-repo-
+
     - name: rebuild
       id: rebuild
       run: make
@@ -75,13 +83,26 @@ jobs:
         PUBLISH: ${{ github.event.inputs.publish }}
 
     - name: show status
-      run: echo publish=${{ steps.rebuild.outputs.update }}
+      run: echo publish=${{ steps.rebuild.outputs.updated }}
 
     - name: publish repo
-      if: ${{ steps.rebuild.outputs.update == 'true' }}
+      if: steps.rebuild.outputs.updated == 'true'
       run: |
         rclone sync apt b2-apt-package-archive:apt-package-archive -v
         rclone cleanup b2-apt-package-archive:apt-package-archive -v
+
+    - name: Generate cache content hash
+      id: hash
+      run: |
+        echo "new_hash=$(sha256sum apt/*.deb | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+    - name: Save cache
+      continue-on-error: true
+      if: steps.rebuild.outputs.updated == 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: apt/
+        key: zotero-repo-${{ steps.hash.outputs.hash }}
+
 
   install:
     needs: rebuild
