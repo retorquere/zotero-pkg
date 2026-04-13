@@ -154,7 +154,6 @@ export class Zotero {
   ini(inifile, mod) {
     const data = ini.parse(readFileSync(inifile, 'utf-8'))
     mod(data)
-    console.log('rewriting', inifile)
     writeFileSync(
       inifile,
       ini.stringify(data, {
