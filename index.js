@@ -138,7 +138,7 @@ async function main() {
     'index.css',
     'index.html',
     'zotero-archive-keyring.pgp',
-  ].find(asset => !existsSync(path.join(repo, asset)))
+  ].find(asset => !existsSync(path.join(repo, asset))) || false
 
   if (updated) {
     if (pending.length) {
@@ -201,7 +201,6 @@ async function main() {
   }
 
   if (process.env.GITHUB_ACTIONS === 'true') {
-    console.log(`updated=${updated}`)
     await fs.appendFile(process.env.GITHUB_OUTPUT, `updated=${updated}\n`)
   }
 }
