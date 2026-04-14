@@ -143,15 +143,15 @@ jobs:
 
     - name: install all the things
       run: |
-        pip install -r requirements.txt
         sudo apt -y clean
         sudo apt -y update
         sudo apt -y install desktop-file-utils zotero zotero-beta xvfb libegl1 libgl1 libdbus-glib-1-2
-        dpkg -l | grep zotero
 
     - name: test all the things
       run: |
         set -eu
+
+        dpkg -l | grep zotero
 
         for Z in zotero zotero-beta; do
           rm -f $Z.log
@@ -185,6 +185,7 @@ jobs:
           echo "  $Z started normally"
         done
 
+#        pip install -r requirements.txt
 #        for c in zotero zotero-beta; do
 #          ./start.py $c
 #          desktop-file-validate /usr/share/applications/$c.desktop && echo 'all clear!'
