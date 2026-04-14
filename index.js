@@ -40,6 +40,7 @@ async function main() {
   await fs.mkdir(repo, { recursive: true })
 
   const keep = new Set()
+  const pending = []
   let updated = process.env.BUILD === 'true' || process.env.PUBLISH === 'true'
 
   for (const channel of ['release', 'beta']) {
@@ -86,7 +87,7 @@ async function main() {
       }
       else if (existsSync(deb.path) || await exists(url)) {
         banner(`${prefix}: retaining ${deb.name}`)
-        if (!existsSync(deb.path)) await download(url, deb.path)
+        if (!existsSync(deb.path)) pending.push([url, deb.path])
         continue
       }
       else {
@@ -140,6 +141,13 @@ async function main() {
   ].find(asset => !existsSync(path.join(repo, asset)))
 
   if (updated) {
+    if (pending.length) {
+      banner('Fetching retained packages', '=')
+      for (const [u, p] in pending) {
+        await download(u, p)
+      }
+    }
+
     process.chdir(repo)
 
     banner('Rebuilding repo index', '=')
