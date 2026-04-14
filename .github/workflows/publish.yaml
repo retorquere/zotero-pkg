@@ -28,38 +28,6 @@ jobs:
     steps:
     - uses: actions/checkout@v6
 
-    - name: import GPG key
-      uses: retorquere/ghaction-import-gpg@rebase
-      with:
-        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-
-    - name: install build requirements
-      run: |
-        sudo apt-get -q update
-        sudo apt-get -qy install devscripts fakeroot moreutils pandoc imagemagick
-
-    - name: install nfpm
-      run: |
-        echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
-        sudo apt update
-        sudo apt install nfpm
-
-    - name: install rclone
-      run: curl https://rclone.org/install.sh | sudo bash
-
-    - name: configure rclone
-      run: |
-        mkdir -p ~/.config/rclone
-        cat <<EOF > ~/.config/rclone/rclone.conf
-
-        [b2-apt-package-archive]
-        type = b2
-        account = ${{ secrets.B2_APPLICATION_KEY_ID }}
-        key = ${{ secrets.B2_APPLICATION_KEY }}
-        hard_delete = true
-        download_url = https://zotero.retorque.re
-        EOF
-
     - name: install node
       uses: actions/setup-node@v6
       with:
@@ -85,6 +53,43 @@ jobs:
     - name: show status
       run: echo publish=${{ steps.rebuild.outputs.updated }}
 
+    - name: import GPG key
+      if: steps.rebuild.outputs.updated == 'true'
+      uses: retorquere/ghaction-import-gpg@rebase
+      with:
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+
+    - name: install build requirements
+      if: steps.rebuild.outputs.updated == 'true'
+      run: |
+        sudo apt-get -q update
+        sudo apt-get -qy install devscripts fakeroot moreutils pandoc imagemagick
+
+    - name: install nfpm
+      if: steps.rebuild.outputs.updated == 'true'
+      run: |
+        echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
+        sudo apt update
+        sudo apt install nfpm
+
+    - name: install rclone
+      if: steps.rebuild.outputs.updated == 'true'
+      run: curl https://rclone.org/install.sh | sudo bash
+
+    - name: configure rclone
+      if: steps.rebuild.outputs.updated == 'true'
+      run: |
+        mkdir -p ~/.config/rclone
+        cat <<EOF > ~/.config/rclone/rclone.conf
+
+        [b2-apt-package-archive]
+        type = b2
+        account = ${{ secrets.B2_APPLICATION_KEY_ID }}
+        key = ${{ secrets.B2_APPLICATION_KEY }}
+        hard_delete = true
+        download_url = https://zotero.retorque.re
+        EOF
+
     - name: publish repo
       if: steps.rebuild.outputs.updated == 'true'
       run: |
@@ -92,12 +97,13 @@ jobs:
         rclone cleanup b2-apt-package-archive:apt-package-archive -v
 
     - name: generate cache content hash
+      if: steps.rebuild.outputs.updated == 'true'
       id: hash
       run: |
         echo "hash=$(sha256sum apt/*.deb | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
     - name: save cache
-      continue-on-error: true
       if: steps.rebuild.outputs.updated == 'true'
+      continue-on-error: true
       uses: actions/cache/save@v5
       with:
         path: apt/
