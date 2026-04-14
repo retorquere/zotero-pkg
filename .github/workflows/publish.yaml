@@ -24,7 +24,8 @@ concurrency:
 jobs:
   rebuild:
     runs-on: ubuntu-latest
-    # runs-on: ubuntu-20.04
+    outputs:
+      updated: ${{ steps.rebuild.outputs.updated }}
     steps:
     - uses: actions/checkout@v6
 
@@ -120,6 +121,7 @@ jobs:
       status: success
     steps:
     - name: allow cloudflare CDN time to settle
+      if: needs.rebuild.outputs.updated == 'true'
       run: sleep 60
 
     - uses: actions/checkout@v6
