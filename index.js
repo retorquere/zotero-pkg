@@ -201,6 +201,7 @@ async function main() {
   }
 
   if (process.env.GITHUB_ACTIONS === 'true') {
+    console.log(`updated=${updated}`)
     await fs.appendFile(process.env.GITHUB_OUTPUT, `updated=${updated}\n`)
   }
 }
