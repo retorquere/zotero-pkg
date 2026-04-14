@@ -124,12 +124,12 @@ jobs:
       if: needs.rebuild.outputs.updated == 'true'
       run: sleep 60
 
-#    - uses: actions/checkout@v6
-#
-#    - name: install python
-#      uses: actions/setup-python@v6
-#      with:
-#        python-version: '3.12'
+    - uses: actions/checkout@v6
+
+    - name: install python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.12'
 
     - name: install apt repo
       run: |
@@ -149,36 +149,8 @@ jobs:
 
     - name: test all the things
       run: |
-        set -eu
-
-        for Z in zotero zotero-beta; do
-          echo "Starting $Z..."
-
-          xvfb-run --auto-servernum /usr/lib/$Z/zotero -ZoteroDebugText > $Z.log 2>&1 &
-          PID=$!
-
-          sleep 20
-          echo "  Stopping $Z (PID $PID)..."
-
-          kill -TERM -$PID 2>/dev/null || true
-          sleep 5
-
-          if kill -0 $PID 2>/dev/null; then
-            echo "  !! Killing $Z"
-            kill -KILL -$PID 2>/dev/null || true
-          fi
-
-          grep -q "Asynchronously opening database" $Z.log || {
-            echo "Error: $Z failed to start correctly."
-            cat $Z.log
-            exit 1
-          }
-
-          echo "Success: $Z started normally."
+        pip install xvfbwrapper
+        for c in zotero zotero-beta; do
+          ./start.py $c
+          desktop-file-validate /usr/share/applications/$c.desktop && echo 'all clear!'
         done
-
-#        pip install -r requirements.txt
-#        for c in zotero zotero-beta; do
-#          ./start.py $c
-#          desktop-file-validate /usr/share/applications/$c.desktop && echo 'all clear!'
-#        done
