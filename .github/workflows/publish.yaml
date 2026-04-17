@@ -51,7 +51,7 @@ jobs:
         sudo apt-get update -q
         sudo apt-get install -y devscripts fakeroot moreutils pandoc imagemagick nfpm
         echo "::endgroup::"
-        which magick || echo 'imagemagick not installed'
+        which magick || which mogrify || echo 'imagemagick not installed'
         which nfpm || echo 'nfpm not installed'
 
     - name: rebuild

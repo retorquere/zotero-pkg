@@ -213,8 +213,7 @@ export class Zotero {
     })
 
     if (this.beta) {
-      run('magick', [
-        'mogrify',
+      run('mogrify', [
         '-font', 'DejaVu-Sans-Bold',
         '-pointsize', '40',
         '-gravity', 'NorthWest',
