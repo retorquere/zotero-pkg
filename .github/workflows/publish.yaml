@@ -44,6 +44,13 @@ jobs:
         restore-keys: |
           zotero-repo-
 
+    - name: install build requirements
+      run: |
+        sudo apt-get -q update
+        echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
+        sudo apt update
+        sudo apt-get -qy install devscripts fakeroot moreutils pandoc imagemagick nfpm
+
     - name: rebuild
       id: rebuild
       run: make
@@ -59,19 +66,6 @@ jobs:
       uses: retorquere/ghaction-import-gpg@rebase
       with:
         gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-
-    - name: install build requirements
-      if: steps.rebuild.outputs.updated == 'true'
-      run: |
-        sudo apt-get -q update
-        sudo apt-get -qy install devscripts fakeroot moreutils pandoc imagemagick
-
-    - name: install nfpm
-      if: steps.rebuild.outputs.updated == 'true'
-      run: |
-        echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
-        sudo apt update
-        sudo apt install nfpm
 
     - name: install rclone
       if: steps.rebuild.outputs.updated == 'true'

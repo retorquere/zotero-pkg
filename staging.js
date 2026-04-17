@@ -212,7 +212,6 @@ export class Zotero {
       ].join(';')
     })
 
-    /*
     if (this.beta) {
       run('magick', [
         'mogrify',
@@ -227,11 +226,12 @@ export class Zotero {
         path.join(staging, 'icons/icon128.png'),
       ])
 
+      /*
       this.ini(path.join(staging, 'app', 'application.ini'), app => {
         app.App.Name = 'Zotero (beta)'
       })
+      */
     }
-    */
 
     return this.config.staging
   }
