@@ -9,7 +9,7 @@ import path from 'node:path'
 
 const amber = chalk.hex('#FFB000')
 
-import { download, exists, run, shell, Zotero } from './staging.js'
+import { download, exists, run, Zotero } from './staging.js'
 
 async function getHash(filename, algo) {
   const content = await fs.readFile(filename)
@@ -149,8 +149,7 @@ async function main() {
     }
 
     process.chdir(repo)
-
-    banner('Rebuilding repo index', '=')
+    banner(`Rebuilding ${process.cwd()}`, '=')
 
     const assets = await fs.readdir('.')
     for (const asset of assets) {
@@ -161,11 +160,22 @@ async function main() {
       }
     }
 
-    // Use shell for the pipe-heavy apt commands
-    shell("apt-ftparchive packages . | awk 'BEGIN{ok=1} { if ($0 ~ /^E: /) { ok = 0 }; print } END{exit !ok}' > Packages")
+    const packages = run('apt-ftparchive', ['packages', '.'])
+    if (packages.split('\n').find(_ => _.startsWith('E:'))) {
+      console.log('apt-ftparchive failed')
+      process.exit(1)
+    }
+    writeFileSync('Packages', packages)
+
     run('rm', ['-rf', 'by-hash'])
     run('bzip2', ['-kf', 'Packages'])
-    shell('apt-ftparchive -o APT::FTPArchive::AlwaysStat=true -o APT::FTPArchive::Release::Codename=./ -o APT::FTPArchive::Release::Acquire-By-Hash=yes release . > Release')
+
+    writeFileSync('Release', run('apt-ftparchive', [
+      '-o', 'APT::FTPArchive::AlwaysStat=true',
+      '-o', 'APT::FTPArchive::Release::Codename=./',
+      '-o', 'APT::FTPArchive::Release::Acquire-By-Hash=yes', 
+      'release', '.'
+    ]))
 
     run('gpg', ['--yes', '-abs', '--local-user', maintainer.gpgkey, '-o', 'Release.gpg', '--digest-algo', 'sha256', 'Release'])
     run('gpg', ['--yes', '-abs', '--local-user', maintainer.gpgkey, '--clearsign', '-o', 'InRelease', '--digest-algo', 'sha256', 'Release'])

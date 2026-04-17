@@ -26,41 +26,34 @@ class Status {
     process.stdout.write('\r\x1b[K' + chalk.bgBlack.green(this.msg) + '\n')
   }
 
-  dump(err) {
-    console.log(chalk.bgBlack.white(err.message))
-    console.log(chalk.bgBlack.white(err.stderr))
+  dump(output) {
+    if (output) console.log(chalk.bgBlack.white(output))
+  }
+}
+
+export function $run(cmd, runner) {
+  const status = new Status(cmd)
+  try {
+    const output = runner()
+    status.done()
+    status.dump(output)
+    return output
+  }
+  catch (err) {
+    status.fail()
+    status.dump(err.message)
+    status.dump(err.stdout)
+    status.dump(err.stderr)
+    process.exit(1)
   }
 }
 
 export function run(cmd, args = [], redir = '') {
-  const status = new Status(`$ ${cmd} ${args.join(' ')}`.trim())
-  try {
-    const output = execFileSync(cmd, args, { encoding: 'utf-8' })
-    if (redir) writeFileSync(redir, output)
-    status.done()
-    if (output) console.log(chalk.bgBlack.white(output))
-    return output
-  }
-  catch (err) {
-    status.fail()
-    status.dump(err)
-    process.exit(1)
-  }
+  return $run(`$ ${cmd} ${args.join(' ')}`, () => execFileSync(cmd, args, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] }))
 }
 
 export function shell(cmd) {
-  const status = new Status(`$ ${cmd}`)
-  try {
-    const output = execSync(cmd, { encoding: 'utf-8' })
-    status.done()
-    if (output) console.log(chalk.bgBlack.white(output))
-    return output
-  }
-  catch (err) {
-    status.fail()
-    status.dump(err)
-    process.exit(1)
-  }
+  return $run(cmd, () => execSync(command, { encoding: 'utf-8', shell: true, stdio: ['pipe', 'pipe', 'pipe'] }))
 }
 
 export async function exists(url) {
