@@ -54,6 +54,11 @@ jobs:
         which magick || which mogrify || echo 'imagemagick not installed'
         which nfpm || echo 'nfpm not installed'
 
+    - name: import GPG key
+      uses: retorquere/ghaction-import-gpg@rebase
+      with:
+        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+
     - name: rebuild
       id: rebuild
       run: make
@@ -63,12 +68,6 @@ jobs:
 
     - name: show status
       run: echo publish=${{ steps.rebuild.outputs.updated }}
-
-    - name: import GPG key
-      if: steps.rebuild.outputs.updated == 'true'
-      uses: retorquere/ghaction-import-gpg@rebase
-      with:
-        gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
 
     - name: install rclone
       if: steps.rebuild.outputs.updated == 'true'
