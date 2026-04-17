@@ -47,8 +47,10 @@ jobs:
     - name: install build requirements
       run: |
         echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
-        sudo apt-get -q update
-        sudo apt-get -qy install devscripts fakeroot moreutils pandoc imagemagick nfpm
+        echo "::group::installing build packages"
+        sudo apt-get update -qq
+        sudo apt-get install -qy devscripts fakeroot moreutils pandoc imagemagick nfpm
+        echo "::endgroup::"
         which magick
         which nfpm
 
