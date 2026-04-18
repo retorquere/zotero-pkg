@@ -119,5 +119,5 @@ The install.sh is convenient, but there's a risk to running random scripts from 
 To rebuild this repo you need:
 
 * a deb-based system (I use Ubuntu)
-* [Crystal](https://crystal-lang.org/)
+* node
 
