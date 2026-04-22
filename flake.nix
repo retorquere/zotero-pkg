@@ -5,6 +5,11 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
+  nixConfig = {
+    extra-substituters = [ "https://retorquere.cachix.org" ];
+    extra-trusted-public-keys = [ "retorquere.cachix.org-1:DXyflyaoVSgamtgmzgZk1L1m868q6c/zN89ewzEwmqQ=" ];
+  };
+
   outputs = { self, nixpkgs }:
     let
       supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];

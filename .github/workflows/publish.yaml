@@ -192,13 +192,13 @@ jobs:
                     .#packages.aarch64-linux.zotero-beta \
                     .#packages.i686-linux.zotero \
                     .#packages.i686-linux.zotero-beta \
-                    --json | jq -r '.[].outputs.out' | cachix push retorquere
+                    --accept-flake-config --json | jq -r '.[].outputs.out' | cachix push retorquere
 
   test:
     needs: nix
     runs-on: ubuntu-latest
     steps:
     - run: curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
-    - run: nix run github:NixOS/nixpkgs/nixos-unstable#cachix -- info retorquere --json | jq -r '"extra-substituters = \(.uri)\nextra-trusted-public-keys = \(.publicKeys[0])"' | sudo tee -a /etc/nix/nix.conf && sudo pkill nix-daemon
+    - run: nix run github:your-user/your-repo --accept-flake-config
     - run: nix profile add "github:retorquere/zotero-pkg#zotero"
     - run: zotero --version
