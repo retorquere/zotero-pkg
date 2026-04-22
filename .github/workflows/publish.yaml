@@ -200,6 +200,6 @@ jobs:
     steps:
     - run: curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
     - run: nix profile install nixpkgs#cachix
-    #- run: cachix use retorquere
+    - run: sudo cachix use retorquere
     - run: nix profile install "github:retorquere/zotero-pkg#zotero"
     - run: zotero --version
