@@ -114,6 +114,7 @@ sudo apt-get purge zotero
 
 The install.sh is convenient, but there's a risk to running random scripts from the internet as root. The script is fairly simple though, and the actions can be done by hand fairly easily. In the end it installs either `/etc/apt/sources.list.d/zotero.list` or `/etc/apt/sources.list.d/zotero.sources` and the regular apt infrastructure is used from that point on.
 
+<!--
 # Non-Debian systems
 
 This project now also offers experimental Nix packages.
@@ -171,6 +172,7 @@ run
 ```
 nix profile install "github:retorquere/zotero-pkg#zotero"
 ```
+-->
 
 # Developers
 
