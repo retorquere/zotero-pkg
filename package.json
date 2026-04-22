@@ -15,6 +15,7 @@
     "dprint": "^0.53.2",
     "js-ini": "^1.6.0",
     "js-yaml": "^4.1.1",
+    "json-stringify-deterministic": "^1.0.13",
     "semver": "^7.7.4"
   }
 }

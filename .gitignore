@@ -7,3 +7,4 @@ gpg
 nfpm.yaml
 node_modules
 package-lock.json
+nix.json

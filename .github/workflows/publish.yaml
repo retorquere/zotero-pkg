@@ -22,7 +22,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  rebuild:
+  apt:
     runs-on: ubuntu-latest
     outputs:
       updated: ${{ steps.rebuild.outputs.updated }}
@@ -107,7 +107,7 @@ jobs:
         key: zotero-repo-${{ steps.hash.outputs.hash }}
 
   install:
-    needs: rebuild
+    needs: apt
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -150,3 +150,49 @@ jobs:
           ./start.py $c
           desktop-file-validate /usr/share/applications/$c.desktop && echo 'all clear!'
         done
+
+  nix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore nix.json
+        uses: actions/cache/restore@v4
+        with:
+          path: nix.json
+          key: zotero-nix-json-${{ github.run_id }}
+          restore-keys: zotero-nix-json-
+
+      - uses: cachix/install-nix-action@v25
+        with:
+          extra_nix_config: |
+            extra-platforms = aarch64-linux i686-linux
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v14
+        with:
+          name: retorquere
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+
+      - name: Update versions
+        run: |
+          npm i
+          node nix.js
+
+      - name: Build and Push
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          nix build .#packages.x86_64-linux.zotero \
+                    .#packages.x86_64-linux.zotero-beta \
+                    .#packages.aarch64-linux.zotero \
+                    .#packages.aarch64-linux.zotero-beta \
+                    .#packages.i686-linux.zotero \
+                    .#packages.i686-linux.zotero-beta \
+                    --json | jq -r '.[].outputs.out' | cachix push retorquere
+
+      - name: Save nix.json to Cache
+        uses: actions/cache/save@v4
+        if: always() # Save even if build fails so we keep the hashes we did get
+        with:
+          path: nix.json
+          key: zotero-nix-json-${{ github.run_id }}
