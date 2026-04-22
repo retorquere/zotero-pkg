@@ -157,19 +157,19 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Restore nix.json
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: nix.json
           key: zotero-nix-json-${{ github.run_id }}
           restore-keys: zotero-nix-json-
 
-      - uses: cachix/install-nix-action@v25
+      - uses: cachix/install-nix-action@v31
         with:
           extra_nix_config: |
             extra-platforms = aarch64-linux i686-linux
 
       - name: Setup Cachix
-        uses: cachix/cachix-action@v14
+        uses: cachix/cachix-action@v17
         with:
           name: retorquere
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
@@ -191,7 +191,7 @@ jobs:
                     --json | jq -r '.[].outputs.out' | cachix push retorquere
 
       - name: Save nix.json to Cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         if: always() # Save even if build fails so we keep the hashes we did get
         with:
           path: nix.json
