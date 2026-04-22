@@ -180,7 +180,7 @@ jobs:
           npm i
           node nix.js
           # stop nix moaning about untracked files
-          git add -N nix.json
+          git add -fN nix.json
 
       - name: Build and Push
         if: steps.update.outputs.changed == 'true'
