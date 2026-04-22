@@ -182,9 +182,15 @@ jobs:
           # stop nix moaning about untracked files
           git add -fN nix.json
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+        with:
+          platforms: arm64,armhf,i386
+
       - name: Build and Push
         if: steps.update.outputs.changed == 'true'
         run: |
+          set -o pipefail
           nix build .#packages.x86_64-linux.zotero \
                     .#packages.x86_64-linux.zotero-beta \
                     .#packages.aarch64-linux.zotero \
