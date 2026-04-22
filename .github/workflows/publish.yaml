@@ -199,6 +199,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
-    - run: nix run github:retorquere/zotero-pkg --accept-flake-config
-    - run: nix profile add "github:retorquere/zotero-pkg#zotero"
+    - run: nix profile add "github:retorquere/zotero-pkg#zotero" --accept-flake-config
     - run: zotero --version
