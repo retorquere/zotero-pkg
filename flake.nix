@@ -1,35 +1,38 @@
 {
-  description = "Zotero Tarball";
+  description = "Zotero";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  };
 
-  outputs = { self, nixpkgs }: 
+  outputs = { self, nixpkgs }:
     let
-      systems = [ "x86_64-linux" "aarch64-linux" "i686-linux" ];
-      forAllSystems = nixpkgs.lib.genAttrs systems;
+      supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
+      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
+
       data = builtins.fromJSON (builtins.readFile ./nix.json);
+
     in {
-      packages = forAllSystems (system: 
-        let 
-          pkgs = import nixpkgs { inherit system; };
+      packages = forAllSystems (system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
         in {
           zotero = pkgs.callPackage ./zotero-bin.nix {
             binName = "zotero";
-            url      = data.release.${system}.url;
-            version  = data.release.${system}.version;
-            revision = data.release.${system}.revision or 0;
-            sha256   = data.release.${system}.hash;
+            version = data.release.${system}.version;
+            url = data.release.${system}.url;
+            sha256 = data.release.${system}.hash;
           };
 
           zotero-beta = pkgs.callPackage ./zotero-bin.nix {
             binName = "zotero-beta";
-            url      = data.beta.${system}.url;
-            version  = data.beta.${system}.version;
-            revision = data.beta.${system}.revision or 0;
-            sha256   = data.beta.${system}.hash;
+            version = data.beta.${system}.version;
+            url = data.beta.${system}.url;
+            sha256 = data.beta.${system}.hash;
           };
 
           default = self.packages.${system}.zotero;
-        });
+        }
+      );
     };
 }
