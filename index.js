@@ -144,7 +144,6 @@ async function main() {
   if (updated) {
     if (pending.length) {
       banner('Fetching retained packages', '=')
-      console.log(pending)
       for (const { url, path } of pending) {
         await download(url, path)
       }
