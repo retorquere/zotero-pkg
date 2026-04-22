@@ -199,7 +199,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - run: curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
-    - run: nix profile install nixpkgs#cachix
-    - run: nix run nixpkgs#cachix -- use retorquere
-    - run: nix profile install "github:retorquere/zotero-pkg#zotero"
+    - run: cachix info retorquere --json | jq -r '"extra-substituters = \(.uri)\nextra-trusted-public-keys = \(.publicKeys[0])"' | sudo tee -a /etc/nix/nix.conf && sudo pkill nix-daemon
+    - run: nix profile add "github:retorquere/zotero-pkg#zotero"
     - run: zotero --version
