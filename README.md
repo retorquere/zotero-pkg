@@ -45,18 +45,6 @@ sudo apt update
 sudo apt install zotero
 ```
 
-<!--
-### Installing Juris-M
-
-To install Juris-M, use the following commands:
-
-```
-wget -qO- https://raw.githubusercontent.com/retorquere/zotero-pkg/master/install.sh | sudo bash
-sudo apt update
-sudo apt install jurism
-```
--->
-
 **Note**
 
 You can use `curl` instead of `wget` by typing
@@ -114,7 +102,6 @@ sudo apt-get purge zotero
 
 The install.sh is convenient, but there's a risk to running random scripts from the internet as root. The script is fairly simple though, and the actions can be done by hand fairly easily. In the end it installs either `/etc/apt/sources.list.d/zotero.list` or `/etc/apt/sources.list.d/zotero.sources` and the regular apt infrastructure is used from that point on.
 
-<!--
 # Non-Debian systems
 
 This project now also offers experimental Nix packages.
@@ -149,30 +136,9 @@ nix run github:retorquere/zotero-pkg#zotero-beta
 
 ## Install it
 
-To "install" Zotero so that it appears in your application menu (GNOME, KDE, etc.) and stays on your system, add it to your configuration.
-
-### For NixOS users
-
-Add this repository to your flake.nix inputs and add the package to your system list:
-
 ```
-# 1. Add to your inputs
-inputs.zotero-bin.url = "github:retorquere/zotero-pkg";
-
-# 2. Add to your environment.systemPackages
-environment.systemPackages = [
-  zotero-bin.packages.${pkgs.system}.zotero
-];
+nix profile add "github:retorquere/zotero-pkg#zotero"
 ```
-
-### For Other Linux Distros (Fedora, Ubuntu, etc.)
-
-run
-
-```
-nix profile install "github:retorquere/zotero-pkg#zotero"
-```
--->
 
 # Developers
 
