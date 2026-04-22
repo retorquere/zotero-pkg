@@ -114,6 +114,62 @@ sudo apt-get purge zotero
 
 The install.sh is convenient, but there's a risk to running random scripts from the internet as root. The script is fairly simple though, and the actions can be done by hand fairly easily. In the end it installs either `/etc/apt/sources.list.d/zotero.list` or `/etc/apt/sources.list.d/zotero.sources` and the regular apt infrastructure is used from that point on.
 
+# Non-Debian systems
+
+This project now also offers Nix packages.
+
+If you don't have Nix on your system yet, you need to set it up first. Nix works on any Linux distribution (Fedora, Ubuntu, etc.) and macOS.
+
+- Install Nix: Follow the [Official Download Instructions](https://nixos.org/download/)
+- Enable Flakes: This repository requires "Flakes." Follow [this guide](https://nixos.wiki/wiki/Flakes#Enable_flakes) to turn them on.
+
+## Optional: Use the Binary Cache
+
+To avoid building Zotero from source, you can use the retorquere cache. This will download the pre-built binaries directly.
+
+If you have [Cachix](https://docs.cachix.org/installation) installed, run:
+
+```
+cachix use retorquere
+```
+
+## Try it
+
+Run Zotero immediately without a permanent installation. The files are kept in a temporary cache and won't touch your system configuration.
+
+```
+# Run the Stable version
+nix run github:retorquere/zotero-deb#zotero
+
+# Run the Beta version
+nix run github:retorquere/zotero-deb#zotero-beta
+```
+
+## Install it
+
+To "install" Zotero so that it appears in your application menu (GNOME, KDE, etc.) and stays on your system, add it to your configuration.
+
+### For NixOS users
+
+Add this repository to your flake.nix inputs and add the package to your system list:
+
+```
+# 1. Add to your inputs
+inputs.zotero-bin.url = "github:retorquere/zotero-deb";
+
+# 2. Add to your environment.systemPackages
+environment.systemPackages = [
+  zotero-bin.packages.${pkgs.system}.zotero
+];
+```
+
+### For Other Linux Distros (Fedora, Ubuntu, etc.)
+
+The standard way to permanently install Nix packages on non-NixOS systems is via Home Manager.
+
+- Follow the [Home Manager Installation Guide](https://nix-community.github.io/home-manager/index.xhtml#ch-installation).
+- Add zotero-bin.packages.${pkgs.system}.zotero to your home.packages list.
+
 # Developers
 
 To rebuild this repo you need:
