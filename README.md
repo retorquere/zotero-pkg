@@ -116,7 +116,7 @@ The install.sh is convenient, but there's a risk to running random scripts from 
 
 # Non-Debian systems
 
-This project now also offers Nix packages.
+This project now also offers experimental Nix packages.
 
 If you don't have Nix on your system yet, you need to set it up first. Nix works on any Linux distribution (Fedora, Ubuntu, etc.) and macOS.
 
