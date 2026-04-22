@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 
-import chalk from 'chalk'
-import yaml from 'js-yaml'
+import Chalk from 'chalk'
+import YAML from 'js-yaml'
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import fs from 'node:fs/promises'
-import path from 'node:path'
+import Path from 'node:path'
 
-const amber = chalk.hex('#FFB000')
+const amber = Chalk.hex('#FFB000')
 
 import { download, exists, run, Zotero } from './staging.js'
 
-async function getHash(filename, algo) {
-  const content = await fs.readFile(filename)
+function getHash(filename, algo) {
+  const content = readFileSync(filename)
   // Map 'SHA256' to 'sha256' and handle 'MD5Sum' -> 'md5'
   return createHash(algo.toLowerCase().replace('sum', '')).update(content).digest('hex')
 }
@@ -20,9 +20,9 @@ async function getHash(filename, algo) {
 function banner(s, c = '*') {
   console.log('\n\n')
   const msg = `${c.repeat(3)} ${s} ${c.repeat(3)}`
-  console.log(chalk.bgBlack(amber(c.repeat(msg.length))))
-  console.log(chalk.bgBlack(amber(msg)))
-  console.log(chalk.bgBlack(amber(c.repeat(msg.length))))
+  console.log(Chalk.bgBlack(amber(c.repeat(msg.length))))
+  console.log(Chalk.bgBlack(amber(msg)))
+  console.log(Chalk.bgBlack(amber(c.repeat(msg.length))))
 }
 
 function humanReadable(size) {
@@ -36,7 +36,7 @@ function humanReadable(size) {
 
 async function main() {
   let maintainer = ''
-  const repo = path.resolve('apt')
+  const repo = Path.resolve('apt')
   await fs.mkdir(repo, { recursive: true })
 
   const keep = new Set()
@@ -54,40 +54,41 @@ async function main() {
       if (!arch.startsWith('linux-')) continue
       arch = arch.replace(/^linux-/, '')
 
-      const debarch = {
-        x86_64: 'amd64',
-        i686: 'i386',
-        arm64: 'arm64',
-      }[arch]
-
-      if (!arch) {
-        console.log('unexpected architecture', arch)
-        process.exit(1)
-      }
-
       const zotero = new Zotero(arch, channel, version)
-      maintainer = zotero.config.maintainer
       if (!zotero.version) {
         banner(`No versions found for ${arch} ${channel}`)
         continue
       }
+      maintainer = zotero.config.maintainer
 
-      const deb = {
-        name: `${zotero.config.package}_${zotero.config.version(zotero.version)}_${debarch}.deb`,
+      const deb = new class {
+        constructor() {
+          this.arch = {
+            x86_64: 'amd64',
+            i686: 'i386',
+            arm64: 'arm64',
+          }[arch]
+          if (!this.arch) {
+            console.log('unexpected architecture', arch)
+            process.exit(1)
+          }
+
+          this.name = `${zotero.config.package}_${zotero.config.version(zotero.version)}_${this.arch}.deb`,
+          this.path = Path.join(repo, this.name)
+          this.url = `https://zotero.retorque.re/file/apt-package-archive/${encodeURIComponent(this.name)}`
+        }
       }
-      deb.path = path.join(repo, deb.name)
+
       keep.add(deb.name)
 
-      const url = `https://zotero.retorque.re/file/apt-package-archive/${encodeURIComponent(deb.name)}`
-
-      const prefix = `${debarch} ${channel} ${zotero.version}`
+      const prefix = `${deb.arch} ${channel} ${zotero.version}`
 
       if (process.env.BUILD === 'true') {
         banner(`${prefix}: rebuilding ${deb.name}`)
       }
-      else if (existsSync(deb.path) || await exists(url)) {
+      else if (existsSync(deb.path) || await exists(deb.url)) {
         banner(`${prefix}: retaining ${deb.name}`)
-        if (!existsSync(deb.path)) pending.push([url, deb.path])
+        if (!existsSync(deb.path)) pending.push(deb)
         continue
       }
       else {
@@ -98,9 +99,9 @@ async function main() {
 
       await fs.writeFile(
         'nfpm.yaml',
-        yaml.dump({
+        YAML.dump({
           name: zotero.config.package,
-          arch: debarch,
+          arch: deb.arch,
           platform: 'linux',
           version: zotero.version,
           ...(zotero.release ? { release: zotero.release } : {}),
@@ -111,7 +112,7 @@ async function main() {
           license: zotero.license,
           contents: [
             { src: staged, dst: `/usr/lib/${zotero.config.package}`, type: 'tree' },
-            { src: path.join(staged, `${zotero.bin}.desktop`), dst: `/usr/share/applications/${zotero.config.package}.desktop` },
+            { src: Path.join(staged, `${zotero.bin}.desktop`), dst: `/usr/share/applications/${zotero.config.package}.desktop` },
             { src: 'mime.xml', dst: `/usr/share/mime/packages/${zotero.config.package}.xml` },
             { src: `/usr/lib/${zotero.config.package}/${zotero.bin}`, dst: `/usr/bin/${zotero.config.package}`, type: 'symlink' },
           ],
@@ -138,13 +139,14 @@ async function main() {
     'index.css',
     'index.html',
     'zotero-archive-keyring.pgp',
-  ].find(asset => !existsSync(path.join(repo, asset))) || false
+  ].find(asset => !existsSync(Path.join(repo, asset))) || false
 
   if (updated) {
     if (pending.length) {
       banner('Fetching retained packages', '=')
-      for (const [u, p] in pending) {
-        await download(u, p)
+      console.log(pending)
+      for (const { url, path } of pending) {
+        await download(url, path)
       }
     }
 
@@ -183,7 +185,7 @@ async function main() {
     for (const hsh of ['MD5Sum', 'SHA1', 'SHA256', 'SHA512']) {
       await fs.mkdir(`by-hash/${hsh}`, { recursive: true })
       for (const pkg of ['Packages', 'Packages.bz2']) {
-        const fileHash = await getHash(pkg, hsh)
+        const fileHash = getHash(pkg, hsh)
         await fs.copyFile(pkg, `by-hash/${hsh}/${fileHash}`)
       }
     }
