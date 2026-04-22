@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "start": "FORCE_COLOR=3 node index.js",
-    "test": "dprint fmt *.js"
+    "test": "dprint fmt *.js",
+    "nix": "nix build path:.#zotero"
   },
   "author": "Emiliano Heyns",
   "license": "ISC",

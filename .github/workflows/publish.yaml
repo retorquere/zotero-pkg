@@ -205,3 +205,18 @@ jobs:
         with:
           path: nix.json
           key: zotero-nix-json-${{ github.run_id }}
+
+      - name: Test Install
+        run: |
+          set -o pipefail
+
+          nix profile install .#zotero --refresh
+
+          if ! command -v zotero &> /dev/null; then
+            echo "Error: zotero binary not found in PATH after install"
+            exit 1
+          fi
+
+          zotero --version || true
+
+          nix profile remove zotero
