@@ -175,6 +175,7 @@ jobs:
           authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
 
       - name: Update versions
+        id: update
         run: |
           npm i
           node nix.js

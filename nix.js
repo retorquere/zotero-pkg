@@ -54,7 +54,7 @@ for (const channel of ['release', 'beta']) {
   nix[channel] = Object.fromEntries(nix[channel])
 }
 
-const changed = stringify(nix) !== stringify(cached)
+const changed = (stringify(nix) !== stringify(cached)) || true
 
 console.log(changed ? '' : 'no', 'change detected')
 
