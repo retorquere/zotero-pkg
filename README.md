@@ -120,8 +120,7 @@ This project now also offers experimental Nix packages.
 
 If you don't have Nix on your system yet, you need to set it up first. Nix works on any Linux distribution (Fedora, Ubuntu, etc.) and macOS.
 
-- Install Nix: Follow the [Official Download Instructions](https://nixos.org/download/)
-- Enable Flakes: This repository requires "Flakes." Follow [this guide](https://nixos.wiki/wiki/Flakes#Enable_flakes) to turn them on.
+- Install Nix: Follow the [Official installation instructions](https://nixos.org/download/#nix-install-linux)
 
 ## Optional: Use the Binary Cache
 
@@ -130,6 +129,8 @@ To avoid building Zotero from source, you can use the retorquere cache. This wil
 If you have [Cachix](https://docs.cachix.org/installation) installed, run:
 
 ```
+nix profile install nixpkgs#cachix
+sudo cachix use retorquere
 cachix use retorquere
 ```
 
@@ -165,10 +166,11 @@ environment.systemPackages = [
 
 ### For Other Linux Distros (Fedora, Ubuntu, etc.)
 
-The standard way to permanently install Nix packages on non-NixOS systems is via Home Manager.
+run
 
-- Follow the [Home Manager Installation Guide](https://nix-community.github.io/home-manager/index.xhtml#ch-installation).
-- Add zotero-bin.packages.${pkgs.system}.zotero to your home.packages list.
+```
+nix profile install "github:retorquere/zotero-pkg#zotero"
+```
 
 # Developers
 
