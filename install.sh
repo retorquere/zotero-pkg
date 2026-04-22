@@ -70,7 +70,7 @@ if [ -f /etc/apt/trusted.gpg.d/zotero.gpg ]; then
   sudo rm -f /etc/apt/trusted.gpg.d/zotero.gpg
 fi
 
-KEYBASE=https://raw.githubusercontent.com/retorquere/zotero-deb/master
+KEYBASE=https://raw.githubusercontent.com/retorquere/zotero-pkg/master
 KEYNAME=zotero-archive-keyring.gpg
 KEYRING="/usr/share/keyrings/$KEYNAME"
 LIST=/etc/apt/sources.list.d/zotero.list

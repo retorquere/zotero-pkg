@@ -129,7 +129,7 @@ jobs:
 
     - name: install apt repo
       run: |
-        export INSTALLSH=https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh
+        export INSTALLSH=https://raw.githubusercontent.com/retorquere/zotero-pkg/master/install.sh
         echo INSTALLSH=$INSTALLSH
         curl -sL $INSTALLSH | tee install.sh | sudo bash -s -- -m ${{ matrix.mode }}
         echo ==== install.sh ===

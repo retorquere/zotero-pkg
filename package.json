@@ -1,5 +1,5 @@
 {
-  "name": "zotero-deb",
+  "name": "zotero-pkg",
   "type": "module",
   "version": "1.0.0",
   "description": "Build debian packages for Zotero",

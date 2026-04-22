@@ -7,7 +7,7 @@
 
 (re)install using
 ```
-curl -sL https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh | sudo bash
+curl -sL https://raw.githubusercontent.com/retorquere/zotero-pkg/master/install.sh | sudo bash
 ```
 
 **Mirrors:**
@@ -40,7 +40,7 @@ If you're previously used the tarball install, delete `~/.local/share/applicatio
 To install Zotero, use the following commands:
 
 ```
-wget -qO- https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh | sudo bash
+wget -qO- https://raw.githubusercontent.com/retorquere/zotero-pkg/master/install.sh | sudo bash
 sudo apt update
 sudo apt install zotero
 ```
@@ -51,7 +51,7 @@ sudo apt install zotero
 To install Juris-M, use the following commands:
 
 ```
-wget -qO- https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh | sudo bash
+wget -qO- https://raw.githubusercontent.com/retorquere/zotero-pkg/master/install.sh | sudo bash
 sudo apt update
 sudo apt install jurism
 ```
@@ -61,7 +61,7 @@ sudo apt install jurism
 
 You can use `curl` instead of `wget` by typing
 ```
-curl -sL https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh | sudo bash
+curl -sL https://raw.githubusercontent.com/retorquere/zotero-pkg/master/install.sh | sudo bash
 ```
 
 ## Updating Zotero <!-- / Juris-M -->
@@ -88,7 +88,7 @@ This repo also has the nightly beta's, installable as the `zotero-beta` <!-- and
 The accepted key format in Debian-based systems seems to have changed a while ago, which means the existing signing verification key you have may no longer be available during install. Re-running the install script will remedy that:
 
 ```
-wget -qO- https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh | sudo bash
+wget -qO- https://raw.githubusercontent.com/retorquere/zotero-pkg/master/install.sh | sudo bash
 ```
 
 ## Instructions for installation using the new deb822 repo pointer format
@@ -96,17 +96,17 @@ wget -qO- https://raw.githubusercontent.com/retorquere/zotero-deb/master/install
 add the `-m sources` flag to the install script to install the new deb822 repo pointer format:
 
 ```
-curl -sL https://raw.githubusercontent.com/retorquere/zotero-deb/master/install.sh | sudo bash -s -- -m sources
+curl -sL https://raw.githubusercontent.com/retorquere/zotero-pkg/master/install.sh | sudo bash -s -- -m sources
 ```
 
 ## Instructions for installation on Crostini-capable Chromebooks
 
-Instructions for installation on Crostini-capable Chromebooks can be found on the [wiki](https://github.com/retorquere/zotero-deb/wiki).
+Instructions for installation on Crostini-capable Chromebooks can be found on the [wiki](https://github.com/retorquere/zotero-pkg/wiki).
 
 ## Uninstall
 
 ```
-wget -qO- https://raw.githubusercontent.com/retorquere/zotero-deb/master/uninstall.sh | sudo bash
+wget -qO- https://raw.githubusercontent.com/retorquere/zotero-pkg/master/uninstall.sh | sudo bash
 sudo apt-get purge zotero
 ```
 
@@ -139,10 +139,10 @@ Run Zotero immediately without a permanent installation. The files are kept in a
 
 ```
 # Run the Stable version
-nix run github:retorquere/zotero-deb#zotero
+nix run github:retorquere/zotero-pkg#zotero
 
 # Run the Beta version
-nix run github:retorquere/zotero-deb#zotero-beta
+nix run github:retorquere/zotero-pkg#zotero-beta
 ```
 
 ## Install it
@@ -155,7 +155,7 @@ Add this repository to your flake.nix inputs and add the package to your system 
 
 ```
 # 1. Add to your inputs
-inputs.zotero-bin.url = "github:retorquere/zotero-deb";
+inputs.zotero-bin.url = "github:retorquere/zotero-pkg";
 
 # 2. Add to your environment.systemPackages
 environment.systemPackages = [
