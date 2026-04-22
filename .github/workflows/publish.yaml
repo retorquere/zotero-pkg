@@ -156,13 +156,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Restore nix.json
-        uses: actions/cache/restore@v5
-        with:
-          path: nix.json
-          key: zotero-nix-json-${{ github.run_id }}
-          restore-keys: zotero-nix-json-
-
       - uses: cachix/install-nix-action@v31
         with:
           extra_nix_config: |
@@ -179,8 +172,6 @@ jobs:
         run: |
           npm i
           node nix.js
-          # stop nix moaning about untracked files
-          git add -fN nix.json
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -190,6 +181,10 @@ jobs:
       - name: Build and Push
         if: steps.update.outputs.changed == 'true'
         run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add nix.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: update zotero versions" && git push)
           set -o pipefail
           nix build .#packages.x86_64-linux.zotero \
                     .#packages.x86_64-linux.zotero-beta \
@@ -199,24 +194,12 @@ jobs:
                     .#packages.i686-linux.zotero-beta \
                     --json | jq -r '.[].outputs.out' | cachix push retorquere
 
-      - name: Save nix.json to Cache
-        uses: actions/cache/save@v5
-        if: always() # Save even if build fails so we keep the hashes we did get
-        with:
-          path: nix.json
-          key: zotero-nix-json-${{ github.run_id }}
-
-      - name: Test Install
-        run: |
-          set -o pipefail
-
-          nix profile install .#zotero --refresh
-
-          if ! command -v zotero &> /dev/null; then
-            echo "Error: zotero binary not found in PATH after install"
-            exit 1
-          fi
-
-          zotero --version || true
-
-          nix profile remove zotero
+  test:
+    needs: nix
+    runs-on: ubuntu-latest
+    steps:
+    - run: curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+    - run: nix profile install nixpkgs#cachix
+    #- run: cachix use retorquere
+    - run: nix profile install "github:retorquere/zotero-pkg#zotero"
+    - run: zotero --version
