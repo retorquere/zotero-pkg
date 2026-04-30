@@ -200,4 +200,6 @@ jobs:
     steps:
     - run: curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
     - run: nix profile add "github:retorquere/zotero-pkg#zotero" --accept-flake-config
+      env:
+        NIX_CONFIG: "access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}"
     - run: zotero --version
