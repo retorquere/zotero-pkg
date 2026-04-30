@@ -203,7 +203,9 @@ jobs:
         trusted-users = root github
     steps:
     - name: Install Nix
-      uses: cachix/install-nix-action@v27
+      uses: cachix/install-nix-action@31
+      #with:
+      #  install_url: https://releases.nixos.org/nix/nix-2.34.6/install
     - name: Check Nix installation
       run: nix-env --version
     - run: nix profile add "github:retorquere/zotero-pkg#zotero" --accept-flake-config
