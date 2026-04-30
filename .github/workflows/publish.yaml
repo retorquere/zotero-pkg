@@ -106,7 +106,7 @@ jobs:
         path: apt/
         key: zotero-repo-${{ steps.hash.outputs.hash }}
 
-  install:
+  apt-test:
     needs: apt
     runs-on: ubuntu-latest
     strategy:
@@ -194,12 +194,17 @@ jobs:
                     .#packages.i686-linux.zotero-beta \
                     --accept-flake-config --json | jq -r '.[].outputs.out' | cachix push retorquere
 
-  test:
+  nix-test:
     needs: nix
     runs-on: ubuntu-latest
+    env:
+      NIX_CONFIG: |
+        access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+        trusted-users = root github
     steps:
-    - run: curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
+    - name: Install Nix
+      uses: determinate-systems/nix-installer-action@v4
+    - name: Check Nix installation
+      run: nix-env --version
     - run: nix profile add "github:retorquere/zotero-pkg#zotero" --accept-flake-config
-      env:
-        NIX_CONFIG: "access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}"
     - run: zotero --version
