@@ -203,7 +203,7 @@ jobs:
         trusted-users = root github
     steps:
     - name: Install Nix
-      uses: determinate-systems/nix-installer-action@v4
+      uses: cachix/install-nix-action@v27
     - name: Check Nix installation
       run: nix-env --version
     - run: nix profile add "github:retorquere/zotero-pkg#zotero" --accept-flake-config
