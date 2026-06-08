@@ -53,7 +53,7 @@ export function run(cmd, args = [], redir = '') {
 }
 
 export function shell(cmd) {
-  return $run(cmd, () => execSync(command, { encoding: 'utf-8', shell: true, stdio: ['pipe', 'pipe', 'pipe'] }))
+  return $run(cmd, () => execSync(cmd, { encoding: 'utf-8', shell: true, stdio: ['pipe', 'pipe', 'pipe'] }))
 }
 
 export async function exists(url) {
