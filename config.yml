@@ -41,24 +41,15 @@ zotero:
     - libegl1|libwayland-egl1
     - libegl-mesa0
   release:
-    7.0: 1
-    7.0.3: 1
-    7.0.11: 1
+    9.0.4: 1
 zotero-beta:
   description: Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share research
   depends:
     - libegl1|libwayland-egl1
     - libegl-mesa0
   release:
-    7.0.0.65+b047f3d90: 1
-    7.0.0.76+91054acfe: 1
-    7.0.3.3+6f9abaaff: 1
-    7.0.6.2+b4239fd4c: 2
-    7.0.12.1+31bbf2acf: 1
-    9.0.15+81591eb89: 2
-    9.0.16+6140088b0: 1
-    9.0.19+4398a2bce: 3
     9.0.21+1a89239a1: 1
+    10.0.5+b7437faf5: 1
 jurism:
   description: Juris-M is a free, easy-to-use tool to help you collect, organize, cite, and share research
   depends:
