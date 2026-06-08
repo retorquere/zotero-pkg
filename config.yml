@@ -3,7 +3,9 @@ maintainer:
   email: emiliano.heyns@iris-advies.com
   gpgkey: dpkg
 common:
-  dependencies: # apt-cache depends firefox-esr on ubuntu 20.04, except lsb-release and libgcc
+  suggests:
+    - libreoffice-java-common
+  depends: # apt-cache depends firefox-esr on ubuntu 20.04, except lsb-release and libgcc
     - libasound2
     - libatk1.0-0
     - libc6
@@ -35,22 +37,16 @@ common:
     - gnupg
 zotero:
   description: Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share research
-  dependencies:
+  depends:
     - libegl1|libwayland-egl1
     - libegl-mesa0
   release:
     7.0: 1
     7.0.3: 1
     7.0.11: 1
-zotero7:
-  description: Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share research
-  dependencies: []
-  release:
-    1.0: 1
-    6.0.35: 2
 zotero-beta:
   description: Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share research
-  dependencies:
+  depends:
     - libegl1|libwayland-egl1
     - libegl-mesa0
   release:
@@ -65,7 +61,7 @@ zotero-beta:
     9.0.21+1a89239a1: 1
 jurism:
   description: Juris-M is a free, easy-to-use tool to help you collect, organize, cite, and share research
-  dependencies:
+  depends:
     - default-jre
     - libreoffice-java-common
   release:

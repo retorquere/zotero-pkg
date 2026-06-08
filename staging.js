@@ -99,7 +99,8 @@ export class Config {
     delete this['zotero-beta']
 
     for (const client of [this.zotero, this.beta]) {
-      client.dependencies = [...(client.dependencies || []), ...this.common.dependencies]
+      client.depends = [...(client.depends || []), ...(this.common.depends || [])]
+      client.suggests = [...(client.suggests || []), ...(this.common.suggests || [])]
     }
 
     this.staging = path.resolve(this.staging)
