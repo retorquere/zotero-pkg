@@ -25,12 +25,12 @@ jobs:
       uses: retorquere/label-gun@main
       with:
         assign: true
-        close.message: Thanks for the feedback! Just so you know, GitHub doesn't let
+        close-message: Thanks for the feedback! Just so you know, GitHub doesn't let
           me control who can close issues, and @retorquere likes to leave bug reports
           and enhancements open as a nudge to merge them into the next release.
-        label.awaiting: awaiting-user-feedback
-        label.canclose: question
-        label.reopened: reopened
+        label-awaiting: awaiting-user-feedback
+        label-canclose: question
+        label-reopened: reopened
         token: ${{ github.token }}
         verbose: true
     - if: ${{ steps.labelgun.outputs.status != '' }}
