@@ -2,21 +2,21 @@
   "beta": {
     "aarch64-linux": {
       "arch": "aarch64-linux",
-      "hash": "sha256-rWgWk8UZ1puuWBt6EX0AOY/QbMfdUg1gbBXpn4+Fg3Q=",
-      "url": "https://download.zotero.org/client/beta/10.0-beta.8%2B40b272c46/Zotero-10.0-beta.8%2B40b272c46_linux-arm64.tar.xz",
-      "version": "10.0.8+40b272c46"
+      "hash": "sha256-pjHcL8UeUwWb45xLQhmte9EYB0Jdxo55GaXNqctfJBE=",
+      "url": "https://download.zotero.org/client/beta/10.0-beta.9%2B55eceab3b/Zotero-10.0-beta.9%2B55eceab3b_linux-arm64.tar.xz",
+      "version": "10.0.9+55eceab3b"
     },
     "i686-linux": {
       "arch": "i686-linux",
-      "hash": "sha256-NlgKCRdbkJZAFVQgQDB2/fTLm1iW4nR+SCnW+jzDXhk=",
-      "url": "https://download.zotero.org/client/beta/10.0-beta.8%2B40b272c46/Zotero-10.0-beta.8%2B40b272c46_linux-i686.tar.xz",
-      "version": "10.0.8+40b272c46"
+      "hash": "sha256-+UQDQQ4MkgC4zG4+ebWG7Eu1zIpHw9YDJJKPPotttAA=",
+      "url": "https://download.zotero.org/client/beta/10.0-beta.9%2B55eceab3b/Zotero-10.0-beta.9%2B55eceab3b_linux-i686.tar.xz",
+      "version": "10.0.9+55eceab3b"
     },
     "x86_64-linux": {
       "arch": "x86_64-linux",
-      "hash": "sha256-1MvCHympIQaS0iB6LlMC7WkCs87n1FisajlnM9ys4H4=",
-      "url": "https://download.zotero.org/client/beta/10.0-beta.8%2B40b272c46/Zotero-10.0-beta.8%2B40b272c46_linux-x86_64.tar.xz",
-      "version": "10.0.8+40b272c46"
+      "hash": "sha256-PfZOhoM6xmor3YysOcT+swRMjo7MXnP8/tj/2+VQKZA=",
+      "url": "https://download.zotero.org/client/beta/10.0-beta.9%2B55eceab3b/Zotero-10.0-beta.9%2B55eceab3b_linux-x86_64.tar.xz",
+      "version": "10.0.9+55eceab3b"
     }
   },
   "release": {
