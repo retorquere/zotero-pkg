@@ -22,21 +22,21 @@
   "release": {
     "aarch64-linux": {
       "arch": "aarch64-linux",
-      "hash": "sha256-V4TrxjQ4eube4dSrwF7g9ziGw85ETi6glW3Z8pcrTsY=",
-      "url": "https://download.zotero.org/client/release/9.0.6/Zotero-9.0.6_linux-arm64.tar.xz",
-      "version": "9.0.6"
+      "hash": "sha256-PvTuzi1O6NuC5EzCA+QWOIJNPoWHuZ8LUJ79IFPpfDo=",
+      "url": "https://download.zotero.org/client/release/10.0/Zotero-10.0_linux-arm64.tar.xz",
+      "version": "10.0"
     },
     "i686-linux": {
       "arch": "i686-linux",
-      "hash": "sha256-LOpg6qusbfKwK/hKPH0LEcmL4+97d5PwWF6Y1xfCZ2I=",
-      "url": "https://download.zotero.org/client/release/9.0.6/Zotero-9.0.6_linux-i686.tar.xz",
-      "version": "9.0.6"
+      "hash": "sha256-vNdqF7VyN/tIql94MRMfxsvzpbLeHz9cMol3xfo2mGM=",
+      "url": "https://download.zotero.org/client/release/10.0/Zotero-10.0_linux-i686.tar.xz",
+      "version": "10.0"
     },
     "x86_64-linux": {
       "arch": "x86_64-linux",
-      "hash": "sha256-Dbbo+UvQ2E6GLm71w+IXAw4XPAzTxt+8g2JSxlD+o90=",
-      "url": "https://download.zotero.org/client/release/9.0.6/Zotero-9.0.6_linux-x86_64.tar.xz",
-      "version": "9.0.6"
+      "hash": "sha256-+tELK+4LYXgkig/7e0rdC8Kx5xCI9H1VSUI+HMgANLg=",
+      "url": "https://download.zotero.org/client/release/10.0/Zotero-10.0_linux-x86_64.tar.xz",
+      "version": "10.0"
     }
   }
 }
