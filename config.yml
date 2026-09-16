@@ -1,6 +1,6 @@
 maintainer:
-  name: Emiliano Heyns
-  email: emiliano.heyns@iris-advies.com
+  name: Retorquere
+  email: retorquere@iris-advies.com
   gpgkey: dpkg
 common:
   suggests:

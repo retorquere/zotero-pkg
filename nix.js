@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { execSync } from 'child_process'
+import { execFileSync } from 'child_process'
 import { writeFileSync, readFileSync, existsSync, appendFileSync } from 'fs'
 import yaml from 'js-yaml'
 import $stringify from 'json-stringify-deterministic'
@@ -30,8 +30,7 @@ class Release {
     else {
       console.log('  fetching hash for', this.url)
       const name = `zotero-${channel}-${version.replace(/\+/g, '.')}-${arch}.tar.xz`
-      const cmd = `nix --extra-experimental-features "nix-command flakes" store prefetch-file --json --name '${name}' '${this.url}'`
-      const result = execSync(cmd, { encoding: 'utf8' })
+      const result = execFileSync('nix', ['--extra-experimental-features', 'nix-command flakes', 'store', 'prefetch-file', '--json', '--name', name, this.url], { encoding: 'utf8' })
       const { hash } = JSON.parse(result)
       this.hash = hash
     }
