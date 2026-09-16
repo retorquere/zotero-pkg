@@ -2,7 +2,7 @@ name: Release Zotero/Juris-M .deb packages
 
 on:
   schedule:
-    - cron: */30 * * * *
+    - cron: '*/30 * * * *'
   push:
   workflow_dispatch:
     inputs:
