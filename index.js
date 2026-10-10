@@ -54,6 +54,9 @@ async function main() {
       if (!arch.startsWith('linux-')) continue
       arch = arch.replace(/^linux-/, '')
 
+      // what is going on with the 32 bit beta?!
+      if (arch === 'i686' && channel === 'beta') continue
+
       const zotero = new Zotero(arch, channel, version)
       if (!zotero.version) {
         banner(`No versions found for ${arch} ${channel}`)
