@@ -47,7 +47,7 @@ for (const channel of ['release', 'beta']) {
   nix[channel] = await response.json()
   console.log('building', channel)
   nix[channel] = Object.entries(nix[channel])
-    .filter(([a, v]) => a.startsWith('linux-'))
+    .filter(([a, v]) => a.startsWith('linux-') && (channel === 'release' || a !== 'linux-i686'))
     .map(([a, v]) => new Release(channel, a, v))
     .map(r => [ r.arch, r ])
   nix[channel] = Object.fromEntries(nix[channel])
