@@ -209,4 +209,4 @@ jobs:
     - name: Check Nix installation
       run: nix-env --version
     - run: nix profile add "github:retorquere/zotero-pkg#zotero" --accept-flake-config
-    - run: zotero --version
+    - run: MOZ_DISABLE_CONTENT_SANDBOX=1 zotero --version
