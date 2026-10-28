@@ -63,6 +63,8 @@ stdenv.mkDerivation {
 
     mkdir -p $out/share/applications
     cp ${desktopItem}/share/applications/* $out/share/applications/
+    substituteInPlace $out/share/applications/*.desktop \
+      --replace-fail "${desktopItem}" "$out"
 
     mkdir -p $out/share/icons/hicolor/128x128/apps
     cp ./icons/icon128.png $out/share/icons/hicolor/128x128/apps/${binName}.png
