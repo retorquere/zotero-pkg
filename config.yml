@@ -42,6 +42,7 @@ zotero:
     - libegl-mesa0
   release:
     9.0.4: 1
+    10.0.8: 1
 zotero-beta:
   description: Zotero is a free, easy-to-use tool to help you collect, organize, cite, and share research
   depends:
