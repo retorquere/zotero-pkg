@@ -24,19 +24,19 @@
       "arch": "aarch64-linux",
       "hash": "sha256-OVridjMASdyfqLrTpA/pYlxSuFBU0beH24PzUxQVLaY=",
       "url": "https://download.zotero.org/client/release/10.0.8/Zotero-10.0.8_linux-arm64.tar.xz",
-      "version": "10.0.8"
+      "version": "10.0.8-1"
     },
     "i686-linux": {
       "arch": "i686-linux",
       "hash": "sha256-98XZ0EIBG+rtm2GyQOKnAZEUl/9lAY9UvU1N5uXUwEo=",
       "url": "https://download.zotero.org/client/release/10.0.8/Zotero-10.0.8_linux-i686.tar.xz",
-      "version": "10.0.8"
+      "version": "10.0.8-1"
     },
     "x86_64-linux": {
       "arch": "x86_64-linux",
       "hash": "sha256-pwTP1J9d5lUHkQ4MraSs9yCXVyIBs1dlg/CpKjLBAys=",
       "url": "https://download.zotero.org/client/release/10.0.8/Zotero-10.0.8_linux-x86_64.tar.xz",
-      "version": "10.0.8"
+      "version": "10.0.8-1"
     }
   }
 }
