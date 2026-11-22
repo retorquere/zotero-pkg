@@ -12,11 +12,14 @@
   "author": "Emiliano Heyns",
   "license": "ISC",
   "dependencies": {
-    "chalk": "^5.6.2",
-    "dprint": "^0.53.2",
+    "chalk": "^6.0.1",
+    "dprint": "^0.65.0",
     "js-ini": "^1.6.0",
-    "js-yaml": "^4.1.1",
-    "json-stringify-deterministic": "^1.0.13",
-    "semver": "^7.7.4"
+    "js-yaml": "^5.5.0",
+    "json-stringify-deterministic": "^1.0.19",
+    "semver": "^7.8.6"
+  },
+  "allowScripts": {
+    "dprint@0.65.0": true
   }
 }

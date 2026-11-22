@@ -49,7 +49,7 @@ jobs:
         echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
         echo "::group::installing build packages"
         sudo apt-get update -q
-        sudo apt-get install -y devscripts fakeroot moreutils pandoc imagemagick nfpm
+        sudo apt-get install -y devscripts apt-utils fakeroot moreutils pandoc imagemagick nfpm
         echo "::endgroup::"
         which magick || which mogrify || echo 'imagemagick not installed'
         which nfpm || echo 'nfpm not installed'
