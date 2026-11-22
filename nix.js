@@ -2,7 +2,7 @@
 
 import { execFileSync } from 'child_process'
 import { writeFileSync, readFileSync, existsSync, appendFileSync } from 'fs'
-import yaml from 'js-yaml'
+import * as yaml from 'js-yaml'
 import $stringify from 'json-stringify-deterministic'
 
 function stringify(obj) {

@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import * as ini from 'js-ini'
-import yaml from 'js-yaml'
+import * as yaml from 'js-yaml'
 import { execFileSync, execSync } from 'node:child_process'
 import { createWriteStream, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import fs from 'node:fs/promises'
